@@ -14,14 +14,24 @@ Get the entire pipeline running in under 5 minutes:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/wedoai2025-devops.git
+git clone https://github.com/akshaymittal143/wedoai2025-devops.git
 cd wedoai2025-devops
 
-# Set up the complete pipeline
-make setup
+# Option A: Using Virtual Environment (Recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install pre-commit ruff
+
+# Set up pre-commit hooks
+pre-commit install
 
 # Build and scan the application
 make build scan
+
+# Option B: Using System Python (if no virtualenv)
+# Install dependencies globally
+pip3 install --user pre-commit ruff
+make setup
 
 # Deploy to Kubernetes (requires cluster access)
 make deploy-k8s
@@ -115,15 +125,44 @@ wedoai2025-devops/
 ## 🔧 Prerequisites
 
 ### Required Tools
-- **Docker** 20.0+ ([Install Guide](https://docs.docker.com/get-docker/))
+- **Docker Desktop** 4.0+ ([Install Guide](https://docs.docker.com/get-docker/)) - *Must be running for container builds*
+- **Python** 3.11+ with pip ([Python.org](https://python.org))
+- **Git** 2.0+ with pre-commit hooks support
+
+### For Kubernetes Deployment
 - **Kubernetes** cluster access ([minikube](https://minikube.sigs.k8s.io/docs/start/) for local testing)
 - **kubectl** configured ([Setup Guide](https://kubernetes.io/docs/tasks/tools/))
-- **Python** 3.11+ for local development
-- **Git** with pre-commit hooks support
+
+### Security Scanning Tools
+- **Trivy** for vulnerability scanning ([Install Guide](https://aquasecurity.github.io/trivy/))
+  ```bash
+  # macOS
+  brew install trivy
+  
+  # Linux/WSL
+  curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+  ```
 
 ### Optional but Recommended
 - **Kyverno** installed in your cluster ([Installation](https://kyverno.io/docs/installation/))
 - **Prometheus** & **Grafana** for monitoring ([kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack))
+
+### Python Environment Setup
+Choose one of these approaches:
+
+**Option A: Virtual Environment (Recommended)**
+```bash
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install pre-commit ruff flask
+```
+
+**Option B: System Installation**
+```bash
+pip3 install --user pre-commit ruff flask
+# Ensure ~/.local/bin is in PATH
+export PATH="$HOME/.local/bin:$PATH"
+```
 
 ## 🎯 Makefile Commands
 
@@ -232,7 +271,7 @@ cat anomaly_report_*.txt
 ## 🎓 Learning Resources
 
 ### 📚 Related Articles
-- [Medium Article: AI-Augmented DevOps Complete Guide](https://medium.com/@your-username/ai-devops-guide)
+- [**AI-Augmented DevOps: Complete Technical Guide**](https://wedoai2025-devops.hashnode.dev/ai-augmented-devops-from-code-commit-to-cloud-native-intelligently) - *Full implementation walkthrough with technical deep-dive*
 - [Kubernetes Security Best Practices](https://kubernetes.io/docs/concepts/security/)
 - [Kyverno Policy Examples](https://kyverno.io/policies/)
 
@@ -279,17 +318,85 @@ make test
 
 ### Common Issues
 
+#### Python Environment Conflicts
+**Error:** `Can not perform a '--user' install. User site-packages are not visible in this virtualenv.`
+
+**Solutions:**
+```bash
+# Option 1: Use virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate
+pip install pre-commit ruff flask
+
+# Option 2: Deactivate virtualenv and use system Python
+deactivate
+pip3 install --user pre-commit ruff
+
+# Option 3: Install in virtualenv without --user flag
+pip install pre-commit ruff flask
+```
+
+#### Docker Issues
+**Error:** `Cannot connect to the Docker daemon`
+
+**Solutions:**
+```bash
+# Start Docker Desktop (macOS/Windows)
+open -a Docker
+
+# Start Docker service (Linux)
+sudo systemctl start docker
+
+# Verify Docker is running
+docker --version
+docker ps
+```
+
+**Error:** `FromAsCasing` warnings in Dockerfile
+
+**Fix applied:** Update Dockerfile to use consistent casing:
+```dockerfile
+FROM python:3.11-slim AS builder
+FROM python:3.11-slim AS production
+```
+
 #### Pre-commit Hooks Failing
 ```bash
+# Install pre-commit if missing
+pip install pre-commit
+
 # Update hooks to latest versions
 pre-commit autoupdate
 pre-commit run --all-files
+
+# Skip hooks temporarily (not recommended)
+git commit --no-verify
+```
+
+#### Security Scanning Issues
+**Error:** `trivy: command not found`
+
+**Solutions:**
+```bash
+# Install Trivy (macOS)
+brew install trivy
+
+# Install Trivy (Linux)
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+
+# Use Docker-based scanning (fallback)
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $PWD/reports:/reports \
+  aquasec/trivy:latest image wedoai2025-devops:latest
 ```
 
 #### Kyverno Policies Not Working
 ```bash
 # Check Kyverno installation
 kubectl get pods -n kyverno
+
+# Install Kyverno if missing
+kubectl create -f https://github.com/kyverno/kyverno/releases/latest/download/install.yaml
 
 # Verify policy deployment
 kubectl get cpol
@@ -303,16 +410,57 @@ docker pull python:3.11-slim
 
 # Rebuild with latest patches
 make build scan
+
+# Check specific vulnerabilities
+trivy image --format table wedoai2025-devops:latest
 ```
 
 #### Kubernetes Deployment Issues
 ```bash
+# Check cluster connection
+kubectl cluster-info
+
 # Check pod status
 kubectl get pods
 kubectl describe pod <pod-name>
 
 # Verify security contexts
 kubectl get pod <pod-name> -o yaml | grep -A 10 securityContext
+
+# Check policy violations
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
+
+#### Flask Application Issues
+```bash
+# Test app locally
+cd app
+python3 app.py
+
+# Check dependencies
+pip list | grep -E "(flask|gunicorn)"
+
+# Verify container health
+docker run -p 5000:5000 wedoai2025-devops:latest
+curl http://localhost:5000/api/health
+```
+
+#### Make Command Failures
+**Error:** `make: command not found`
+
+**Solutions:**
+```bash
+# Install make (macOS)
+xcode-select --install
+
+# Install make (Ubuntu/Debian)
+sudo apt-get update && sudo apt-get install make
+
+# Install make (CentOS/RHEL)
+sudo yum install make
+
+# Run commands manually if make unavailable
+./scripts/setup.sh  # Create manual script alternatives
 ```
 
 ## 📈 Metrics and Monitoring
