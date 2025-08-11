@@ -1,0 +1,333 @@
+# AI-Augmented DevOps - .gitignore
+# Comprehensive ignore rules for the complete pipeline
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Flask/Django
+instance/
+.webassets-cache
+.scrapy
+
+# PyEnv
+.python-version
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Docker
+**/.dockerignore
+**/Dockerfile*
+!Dockerfile
+*.tar
+*.tar.gz
+*.rar
+
+# Kubernetes & Helm
+*.kubeconfig
+helm-debug-*.log
+.helm/
+
+# Security and Secrets
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+*.keystore
+*.jks
+.env.local
+.env.*.local
+secrets.yaml
+secrets/
+*.secret
+*secret*
+*password*
+*credential*
+config/secrets/
+
+# Pre-commit
+.pre-commit-config.yaml.backup
+
+# Trivy & Security Scanning
+reports/
+*.sarif
+trivy-*.json
+security-report.*
+vulnerability-report.*
+scan-results/
+.trivy/
+
+# AI/ML Model artifacts
+*.pkl
+*.pickle
+*.joblib
+*.model
+models/
+checkpoints/
+*.h5
+*.pb
+*.onnx
+anomaly_report_*.txt
+ml-outputs/
+
+# Logs and temporary files
+logs/
+*.log
+log/
+tmp/
+temp/
+.tmp/
+artifacts/
+.artifacts/
+
+# IDE and Editor files
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Git
+*.orig
+*.rej
+
+# Backup files
+*.bak
+*.backup
+*.swp
+*.swo
+
+# Compressed files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# CI/CD artifacts
+.github/workflows/artifacts/
+pipeline-artifacts/
+build-artifacts/
+deployment-artifacts/
+
+# Monitoring & Observability
+prometheus-data/
+grafana-data/
+alertmanager-data/
+loki-data/
+
+# Testing
+.tox/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+test-results/
+test-reports/
+
+# Package manager
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local configuration overrides
+config.local.yaml
+config.local.yml
+local-config/
+.local/
+
+# Build outputs
+target/
+bin/
+obj/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificate files
+*.pem
+*.crt
+*.key
+*.p12
+*.pfx
+
+# Terraform (if using Infrastructure as Code)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Ansible (if using for configuration management)
+*.retry
+.vault_pass
+
+# Custom additions for AI-DevOps pipeline
+demo-data/
+sample-configs/
+.makefiles/
+pipeline-cache/
+ai-model-cache/

@@ -1,0 +1,77 @@
+# Pre-commit hooks for AI-Augmented DevOps pipeline
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  # Gitleaks for secret detection
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks
+        name: Detect secrets with Gitleaks
+        description: Scan for secrets in code before commit
+        verbose: true
+
+  # TruffleHog for comprehensive secret scanning
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.63.2
+    hooks:
+      - id: trufflehog
+        name: TruffleHog Secret Scanner
+        description: Find secrets in git history
+        args: ['--since_commit', 'HEAD~1', '--only-verified', '--fail']
+        verbose: true
+
+  # Python code quality with Ruff (faster than Black + isort + flake8)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.6
+    hooks:
+      - id: ruff
+        name: Ruff Linter
+        description: An extremely fast Python linter
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        name: Ruff Formatter
+        description: An extremely fast Python formatter
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Remove trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+        args: ['--multi', '--unsafe']
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1024']
+
+  # Docker security scanning
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        name: Lint Dockerfile
+        description: Dockerfile linter for security and best practices
+
+  # Kubernetes manifest validation
+  - repo: https://github.com/instrumenta/kubeval
+    rev: v0.16.1
+    hooks:
+      - id: kubeval
+        name: Validate Kubernetes manifests
+        files: ^k8s/.*\.yaml$
+        verbose: true
+
+# Global configuration
+default_language_version:
+  python: python3.11
+
+# Skip specific hooks for certain files if needed
+# exclude: ^(path/to/exclude|another/path)$

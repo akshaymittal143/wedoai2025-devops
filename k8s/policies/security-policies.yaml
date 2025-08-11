@@ -1,0 +1,184 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: security-baseline
+  annotations:
+    policies.kyverno.io/title: AI-DevOps Security Baseline
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Enforces security baseline requirements for all pods including
+      proper labeling, container image tag restrictions, and security contexts.
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: disallow-latest-tag
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Using 'latest' tag is not allowed for container images. Please use specific version tags for reproducible deployments."
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            image: "!*:latest"
+  
+  - name: require-app-label
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Pod must have 'app.kubernetes.io/name' label for proper resource tracking and governance"
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/name: "?*"
+            
+  - name: require-security-context
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Pod must have securityContext configured with runAsNonRoot: true"
+      pattern:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+          containers:
+          - name: "*"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                - ALL
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: resource-limits
+  annotations:
+    policies.kyverno.io/title: Resource Limits Required
+    policies.kyverno.io/category: Resource Management
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Ensures all containers have resource requests and limits defined
+      to prevent resource exhaustion and enable proper cluster scheduling.
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-resource-limits
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Container must have resource requests and limits defined"
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
+                cpu: "?*"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: network-security
+  annotations:
+    policies.kyverno.io/title: Network Security Controls
+    policies.kyverno.io/category: Network Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Enforces network security best practices including proper service
+      account configuration and network policies.
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: disallow-automount-service-account-token
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Pods should not automatically mount service account tokens unless explicitly required"
+      anyPattern:
+      - spec:
+          automountServiceAccountToken: false
+      - spec:
+          serviceAccountName: "?*"
+          automountServiceAccountToken: false
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: ai-devops-compliance
+  annotations:
+    policies.kyverno.io/title: AI-DevOps Pipeline Compliance
+    policies.kyverno.io/category: AI-DevOps
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Specific compliance rules for AI-DevOps pipeline workloads including
+      required annotations for monitoring and observability.
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-prometheus-annotations
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/part-of: ai-devops-pipeline
+    validate:
+      message: "AI-DevOps pipeline pods must have Prometheus scraping annotations for observability"
+      pattern:
+        metadata:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "?*"
+            prometheus.io/path: "?*"
+            
+  - name: require-version-label
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/part-of: ai-devops-pipeline
+    validate:
+      message: "AI-DevOps pipeline pods must have version label for deployment tracking"
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/version: "?*"

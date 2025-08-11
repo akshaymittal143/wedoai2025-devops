@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-devops-demo
+  namespace: default
+  labels:
+    app.kubernetes.io/name: ai-devops-demo
+    app.kubernetes.io/component: web-service
+    app.kubernetes.io/part-of: ai-devops-pipeline
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: ai-devops-demo
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-devops-demo
+  namespace: default
+  labels:
+    app.kubernetes.io/name: ai-devops-demo
+    app.kubernetes.io/component: web-service
+    app.kubernetes.io/part-of: ai-devops-pipeline
+automountServiceAccountToken: false
