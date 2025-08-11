@@ -363,13 +363,12 @@ This pipeline is designed to learn and improve:
 
 ### 🤝 Community
 - **GitHub Discussions**: Ask questions and share ideas
-- **Slack Channel**: [#ai-devops-pipeline](https://join.slack.com/your-workspace)
 - **Stack Overflow**: Tag questions with `ai-devops`
 
 ### 📧 Direct Contact
-- **Email**: [your-email@domain.com](mailto:your-email@domain.com)
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/your-profile)
-- **Twitter**: [@your-handle](https://twitter.com/your-handle)
+- **Email**: [your-email@domain.com](mailto:akshay.mittal@ieee.org)
+- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/akshaymittal143)
+- **Twitter**: [@akshaymittal143](https://twitter.com/akshaymittal143)
 
 ---
 
